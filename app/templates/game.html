@@ -3,14 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Game - JomBaca Adventure</title>
+    <title>Mini Game - JomBaca Adventure 🎯</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .game-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 40px auto;
+            text-align: center;
+        }
+        .question-box {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            background: #FFF3E0;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 3px dashed var(--primary-light);
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .option-btn {
+            background: #E8F5E9;
+            border: 2px solid var(--secondary);
+            color: #2E7D32;
+            padding: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:hover {
+            background: var(--secondary);
+            color: white;
+            transform: scale(1.05);
+        }
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <div style="padding: 20px; max-width: 600px; margin: 0 auto; text-align: center;">
-        <h1>Mini Game: Kenal Huruf & Perkataan 🎯</h1>
-        <p>Pilih jawapan yang betul!</p>
-        <a href="{{ url_for('game.dashboard') }}">⬅ Kembali ke Dashboard</a>
+    <div class="game-card">
+        <h2>Mini Game: Kenal Huruf & Perkataan 🎯</h2>
+        
+        <div class="score-board">
+            <span>⭐ Skor: <span id="current-score">0</span></span>
+            <span>🪙 Coin: {{ user.coins }}</span>
+        </div>
+
+        <p id="instruction" style="font-size: 1.2rem; font-weight: bold;">Pilih huruf atau perkataan yang betul!</p>
+
+        <div class="question-box" id="question">A</div>
+
+        <div class="options-grid" id="options">
+            <!-- Pilihan akan dimasukkan melalui JavaScript -->
+        </div>
+
+        <div id="feedback" style="margin-top: 20px; font-size: 1.3rem; font-weight: bold; height: 30px;"></div>
+
+        <div style="margin-top: 30px;">
+            <a href="{{ url_for('game.dashboard') }}" style="color: #666; text-decoration: none; font-weight: bold;">⬅ Kembali ke Dashboard</a>
+        </div>
     </div>
+
+    <script>
+        const questions = [
+            { prompt: "Manakah huruf vokal 'A'?", target: "A", options: ["A", "B", "M", "K"], answer: "A" },
+            { prompt: "Lengkapkan perkataan: B _ T U (Stone)", target: "B A T U", options: ["A", "E", "I", "O"], answer: "A" },
+            { prompt: "Manakah perkataan yang betul?", target: "🐱 Kucing", options: ["Kucing", "Kambing", "Kuda", "Kera"], answer: "Kucing" },
+            { prompt: "Huruf apakah ini?", target: "Z", options: ["N", "Z", "M", "W"], answer: "Z" },
+            { prompt: "Lengkapkan: N A S _", target: "N A S I", options: ["I", "U", "O", "A"], answer: "I" }
+        ];
+
+        let currentIdx = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            if (currentIdx >= questions.length) {
+                document.getElementById('question').innerText = "🎉 TAHNIAH!";
+                document.getElementById('instruction').innerText = `Anda telah tamat permainan dengan Skor: ${score}!`;
+                document.getElementById('options').innerHTML = `<button class="option-btn" onclick="location.reload()" style="grid-column: span 2;">Main Lagi 🔄</button>`;
+                document.getElementById('feedback').innerText = "";
+                return;
+            }
+
+            const q = questions[currentIdx];
+            document.getElementById('instruction').innerText = q.prompt;
+            document.getElementById('question').innerText = q.target;
+            
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(opt, q.answer);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected, correct) {
+            const feedback = document.getElementById('feedback');
+            if (selected === correct) {
+                score += 10;
+                document.getElementById('current-score').innerText = score;
+                feedback.style.color = "green";
+                feedback.innerText = "Syabas! Jawapan Betul! 🥳";
+            } else {
+                feedback.style.color = "red";
+                feedback.innerText = "Alamak! Cuba lagi ya! 😅";
+            }
+
+            setTimeout(() => {
+                feedback.innerText = "";
+                currentIdx++;
+                loadQuestion();
+            }, 1200);
+        }
+
+        loadQuestion();
+    </script>
 </body>
 </html>
