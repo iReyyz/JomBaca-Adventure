@@ -5,17 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - JomBaca Adventure</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .dashboard-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+        .quest-item {
+            background: #F1F8E9;
+            border: 2px solid #AED581;
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .badge-done {
+            background: #4CAF50;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <div style="padding: 20px; max-width: 800px; margin: 0 auto;">
-        <h1>Selamat Datang, {{ user.username }}! 🌟</h1>
-        <div style="background: white; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-            <p><strong>Tahap (Level):</strong> {{ user.level }}</p>
-            <p><strong>Mata XP:</strong> {{ user.xp }}</p>
-            <p><strong>Syiling (Coins):</strong> 🪙 {{ user.coins }}</p>
+        <h1 style="color: var(--primary);">Selamat Datang, {{ user.username }}! 🌟</h1>
+        
+        <!-- Status Profil -->
+        <div class="dashboard-card">
+            <h3 style="margin-top: 0; color: #333;">📊 Profil Pengembara</h3>
+            <p><strong>Tahap (Level):</strong> 🎚️ Level {{ user.level }}</p>
+            <p><strong>Mata XP:</strong> ✨ {{ user.xp }} XP</p>
+            <p><strong>Syiling (Coins):</strong> 🪙 {{ user.coins }} Syiling</p>
         </div>
-        <a href="{{ url_for('game.play_game') }}" class="btn-primary" style="display: inline-block; width: auto; text-decoration: none;">Main Game 🎮</a>
-        <a href="{{ url_for('auth.logout') }}" style="margin-left: 15px; color: red;">Log Keluar</a>
+
+        <!-- Daily Quests (Tugasan Harian Budak) -->
+        <div class="dashboard-card">
+            <h3 style="margin-top: 0; color: var(--primary);">📅 Tugasan Harian (Daily Quests)</h3>
+            
+            <div class="quest-item">
+                <div>
+                    <strong>1. Log masuk hari ini ☀️</strong>
+                    <div style="font-size: 0.9rem; color: #666;">Ganjaran: +10 XP & 🪙 5 Syiling</div>
+                </div>
+                <span class="badge-done">✅ Selesai</span>
+            </div>
+
+            <div class="quest-item">
+                <div>
+                    <strong>2. Main 1 pusingan Mini Game 🎯</strong>
+                    <div style="font-size: 0.9rem; color: #666;">Ganjaran: +20 XP & 🪙 10 Syiling</div>
+                </div>
+                <a href="{{ url_for('game.play_game') }}" style="color: var(--secondary); font-weight: bold; text-decoration: none;">Main Now ➡️</a>
+            </div>
+
+            <div class="quest-item">
+                <div>
+                    <strong>3. Capai skor 30 dalam Tahap Mudah 🏆</strong>
+                    <div style="font-size: 0.9rem; color: #666;">Ganjaran: +30 XP & 🪙 15 Syiling</div>
+                </div>
+                <a href="{{ url_for('game.play_game') }}" style="color: var(--secondary); font-weight: bold; text-decoration: none;">Cabaran ➡️</a>
+            </div>
+        </div>
+
+        <!-- Menu Pilihan -->
+        <div class="action-grid">
+            <a href="{{ url_for('game.play_game') }}" class="btn-primary" style="text-align: center; text-decoration: none;">Main Game 🎮</a>
+            <a href="{{ url_for('game.shop') }}" class="btn-primary" style="text-align: center; text-decoration: none; background-color: #FF9800;">Kedai Syiling 🪙🛍️</a>
+        </div>
+
+        <div style="text-align: center; margin-top: 25px;">
+            <a href="{{ url_for('auth.logout') }}" style="color: #d32f2f; font-weight: bold;">Log Keluar</a>
+        </div>
     </div>
 </body>
 </html>
+

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kedai Syiling 🪙 - JomBaca Adventure</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .shop-container {
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .shop-item {
+            border: 2px solid #FFE0B2;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            background: #FFF8E1;
+            transition: transform 0.2s;
+        }
+        .shop-item:hover {
+            transform: translateY(-5px);
+        }
+        .item-icon {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+        }
+        .buy-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .buy-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="shop-container">
+        <h1 style="color: var(--primary); text-align: center;">Kedai Syiling (Coin Shop) 🪙🛍️</h1>
+        <p style="text-align: center; font-weight: bold;">Gunakan Syiling anda untuk membeli Avatar & Gelaran menarik!</p>
+        
+        <div style="background: #E8F5E9; padding: 12px; border-radius: 12px; text-align: center; font-size: 1.2rem; font-weight: bold; margin-bottom: 20px;">
+            Baki Syiling Anda: 🪙 <span id="coin-balance">{{ user.coins }}</span>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}" style="color: #2E7D32; background: #E8F5E9; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; text-align: center;">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <div class="item-grid">
+            <div class="shop-item">
+                <div class="item-icon">🦁</div>
+                <h3>Avatar Singa Comel</h3>
+                <p>Harga: 🪙 20 Syiling</p>
+                <form action="{{ url_for('game.buy_item') }}" method="POST">
+                    <input type="hidden" name="cost" value="20">
+                    <input type="hidden" name="item_name" value="Avatar Singa Comel">
+                    <button type="submit" class="buy-btn" {% if user.coins < 20 %}disabled{% endif %}>Beli Sekarang</button>
+                </form>
+            </div>
+
+            <div class="shop-item">
+                <div class="item-icon">👑</div>
+                <h3>Gelaran "Raja Membaca"</h3>
+                <p>Harga: 🪙 50 Syiling</p>
+                <form action="{{ url_for('game.buy_item') }}" method="POST">
+                    <input type="hidden" name="cost" value="50">
+                    <input type="hidden" name="item_name" value='Gelaran "Raja Membaca"'>
+                    <button type="submit" class="buy-btn" {% if user.coins < 50 %}disabled{% endif %}>Beli Sekarang</button>
+                </form>
+            </div>
+
+            <div class="shop-item">
+                <div class="item-icon">🚀</div>
+                <h3>Pengembara Angkasa</h3>
+                <p>Harga: 🪙 100 Syiling</p>
+                <form action="{{ url_for('game.buy_item') }}" method="POST">
+                    <input type="hidden" name="cost" value="100">
+                    <input type="hidden" name="item_name" value="Pengembara Angkasa">
+                    <button type="submit" class="buy-btn" {% if user.coins < 100 %}disabled{% endif %}>Beli Sekarang</button>
+                </form>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{{ url_for('game.dashboard') }}" style="color: #666; font-weight: bold; text-decoration: none;">⬅ Kembali ke Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

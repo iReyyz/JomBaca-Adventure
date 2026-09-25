@@ -112,34 +112,54 @@
     </div>
 
     <script>
-        // Bank Soalan Mengikut Tahap Kesukaran (Jawapan tersembunyi & disulitkan)
-        const bankSoalan = {
+        // Bank Soalan Rawak & Pelbagai Tanpa Petunjuk Dalam Kurungan
+        const rawBankSoalan = {
             easy: [
-                { prompt: "Apakah huruf vokal pertama?", display: "___", choices: ["A", "B", "M", "K"], key: 0 },
-                { prompt: "Lengkapkan ejaan: B _ T U (Stone)", display: "B _ T U", choices: ["E", "A", "I", "O"], key: 1 },
-                { prompt: "Huruf apakah yang bermula untuk 'Ayam'?", display: "🐓 Ayam", choices: ["A", "C", "D", "B"], key: 0 },
-                { prompt: "Lengkapkan ejaan: I B _ (Mother)", display: "I B _", choices: ["A", "U", "I", "E"], key: 1 },
-                { prompt: "Huruf vokal untuk 'Ular':", display: "🐍 Ular", choices: ["O", "I", "U", "E"], key: 2 }
+                { prompt: "Apakah huruf vokal pertama?", display: "___", choices: ["A", "B", "M", "K"], answer: "A" },
+                { prompt: "Lengkapkan ejaan perkataan BATU:", display: "B _ T U", choices: ["E", "A", "I", "O"], answer: "A" },
+                { prompt: "Huruf apakah yang bermula untuk AYAM?", display: "🐓 AYAM", choices: ["A", "C", "D", "B"], answer: "A" },
+                { prompt: "Lengkapkan ejaan perkataan IBU:", display: "I B _", choices: ["A", "U", "I", "E"], answer: "U" },
+                { prompt: "Huruf vokal untuk ULAR:", display: "🐍 ULAR", choices: ["O", "I", "U", "E"], answer: "U" },
+                { prompt: "Pilih huruf besar untuk 'm':", display: "m", choices: ["M", "N", "W", "V"], answer: "M" },
+                { prompt: "Lengkapkan ejaan BOLA:", display: "B _ L A", choices: ["O", "A", "I", "U"], answer: "O" },
+                { prompt: "Manakah huruf 'Z'?", display: "___", choices: ["Z", "N", "X", "Y"], answer: "Z" },
+                { prompt: "Lengkapkan ejaan TOP I:", display: "T O P _", choices: ["I", "E", "O", "U"], answer: "I" },
+                { prompt: "Apakah huruf akhir untuk RAMBUT?", display: "R A M B U _", choices: ["T", "P", "K", "M"], answer: "T" }
             ],
             medium: [
-                { prompt: "Ejaan yang betul untuk haiwan ini:", display: "🐱 (Cat)", choices: ["Kucing", "Kambing", "Kuda", "Kera"], key: 0 },
-                { prompt: "Lengkapkan suku kata: BU - ___ (Book)", display: "BU - ___", choices: ["KU", "SU", "LU", "TU"], key: 0 },
-                { prompt: "Lengkapkan suku kata: RA - ___ (King)", display: "RA - ___", choices: ["JA", "MA", "CA", "PA"], key: 0 },
-                { prompt: "Pilih perkataan yang betul:", display: "🏫 Tempat Belajar", choices: ["Rumah", "Sekolah", "Taman", "Kedai"], key: 1 },
-                { prompt: "Lengkapkan perkataan: B O - L _", display: "⚽ Bola", choices: ["A", "E", "I", "O"], key: 0 }
+                { prompt: "Ejaan yang betul untuk haiwan ini:", display: "🐱", choices: ["Kucing", "Kambing", "Kuda", "Kera"], answer: "Kucing" },
+                { prompt: "Lengkapkan suku kata BUKU:", display: "BU - ___", choices: ["KU", "SU", "LU", "TU"], answer: "KU" },
+                { prompt: "Lengkapkan suku kata RAJA:", display: "RA - ___", choices: ["JA", "MA", "CA", "PA"], answer: "JA" },
+                { prompt: "Pilih perkataan yang betul:", display: "🏫", choices: ["Rumah", "Sekolah", "Taman", "Kedai"], answer: "Sekolah" },
+                { prompt: "Lengkapkan perkataan BOLA:", display: "BO - ___", choices: ["LA", "TA", "MA", "SA"], answer: "LA" },
+                { prompt: "Pilih ejaan warna merah:", display: "🔴", choices: ["Merah", "Kuning", "Hijau", "Biru"], answer: "Merah" },
+                { prompt: "Apakah nama buah ini?", display: "🍎", choices: ["Epal", "Pisang", "Tembikai", "Nanas"], answer: "Epal" },
+                { prompt: "Lengkapkan suku kata RO-TI:", display: "RO - ___", choices: ["TI", "PI", "LI", "KI"], answer: "TI" },
+                { prompt: "Pilih ejaan yang betul untuk baju:", display: "👕", choices: ["Baju", "Batu", "Bulu", "Bubu"], answer: "Baju" },
+                { prompt: "Suku kata untuk PISANG:", display: "PI - ___", choices: ["SANG", "MANG", "BANG", "LANG"], answer: "SANG" }
             ],
             hard: [
-                { prompt: "Susun suku kata menjadi perkataan:", display: "KAP - TUL", choices: ["Tulkap", "Laptul", "Kaptul", "Tukal"], key: 2 },
-                { prompt: "Apakah binaan ayat yang betul?", display: "Saya ___ nasi.", choices: ["minum", "makan", "tidur", "lari"], key: 1 },
-                { prompt: "Cari ejaan yang betul:", display: "🌺 Bunga Kebangsaan", choices: ["Bunga Raya", "Bunga Mawar", "Bunga Orkid", "Bunga Melur"], key: 0 },
-                { prompt: "Lengkapkan frasa: Kereta ini sangat ___.", choices: ["laju", "tinggi", "manis", "wangi"], key: 0 },
-                { prompt: "Pilih kata nama haiwan udara:", choices: ["Ikan", "Burung", "Kucing", "Ular"], key: 1 }
+                { prompt: "Susun suku kata menjadi perkataan:", display: "KAP - TUL", choices: ["Tulkap", "Laptul", "Kaptul", "Tukal"], answer: "Kaptul" },
+                { prompt: "Apakah binaan ayat yang betul?", display: "Saya ___ nasi.", choices: ["minum", "makan", "tidur", "lari"], answer: "makan" },
+                { prompt: "Cari ejaan yang betul:", display: "🌺 Bunga Kebangsaan", choices: ["Bunga Raya", "Bunga Mawar", "Bunga Orkid", "Bunga Melur"], answer: "Bunga Raya" },
+                { prompt: "Lengkapkan frasa:", display: "Kereta ini sangat ___.", choices: ["laju", "tinggi", "manis", "wangi"], answer: "laju" },
+                { prompt: "Pilih kata nama haiwan udara:", choices: ["Ikan", "Burung", "Kucing", "Ular"], answer: "Burung" },
+                { prompt: "Mana perkataan berlawanan bagi TINGGI?", display: "Tinggi ⬆️", choices: ["Rendah", "Panjang", "Besar", "Kecil"], answer: "Rendah" },
+                { prompt: "Lengkapkan peribahasa:", display: "Bagaikan ___ dengan tebing.", choices: ["aur", "air", "api", "batu"], answer: "aur" },
+                { prompt: "Apakah lawan bagi PANAS?", display: "🔥 Panas", choices: ["Sejuk", "Manis", "Terang", "Gelap"], answer: "Sejuk" },
+                { prompt: "Pilih kata kerja yang sesuai:", display: "Adik ___ air tembikai.", choices: ["minum", "makan", "baca", "lompat"], answer: "minum" },
+                { prompt: "Susun semula kata: HARI - SE - KO - LAH", display: "🏫", choices: ["Hari Sekolah", "Sekolah Hari", "Lahse Hari", "Hari Lahse"], answer: "Hari Sekolah" }
             ]
         };
 
         let currentDiff = 'easy';
         let currentIdx = 0;
         let sessionScore = 0;
+        let activeQuestions = [];
+
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
 
         function setDifficulty(diff) {
             currentDiff = diff;
@@ -149,12 +169,14 @@
             currentIdx = 0;
             sessionScore = 0;
             document.getElementById('current-score').innerText = sessionScore;
+
+            // Ambil soalan secara rawak setiap kali tahap dipilih
+            activeQuestions = shuffle([...rawBankSoalan[diff]]).slice(0, 5);
             loadQuestion();
         }
 
         function loadQuestion() {
-            const list = bankSoalan[currentDiff];
-            if (currentIdx >= list.length) {
+            if (currentIdx >= activeQuestions.length) {
                 document.getElementById('question').innerText = "🎉 TAHNIAH!";
                 document.getElementById('instruction').innerText = `Tamat Tahap ${currentDiff.toUpperCase()}! Skor: ${sessionScore}`;
                 document.getElementById('options').innerHTML = `<button class="option-btn" onclick="saveAndRestart()" style="grid-column: span 2; background: var(--primary); color: white;">Simpan Skor & Main Lagi 💾</button>`;
@@ -163,25 +185,28 @@
                 return;
             }
 
-            const q = list[currentIdx];
+            const q = activeQuestions[currentIdx];
             document.getElementById('instruction').innerText = q.prompt;
             document.getElementById('question').innerText = q.display;
             
             const optionsDiv = document.getElementById('options');
             optionsDiv.innerHTML = '';
             
-            q.choices.forEach((choice, index) => {
+            // Rawakkan pilihan jawapan
+            const shuffledChoices = shuffle([...q.choices]);
+            
+            shuffledChoices.forEach((choice) => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
                 btn.innerText = choice;
-                btn.onclick = () => checkAnswer(index, q.key);
+                btn.onclick = () => checkAnswer(choice, q.answer);
                 optionsDiv.appendChild(btn);
             });
         }
 
-        function checkAnswer(selectedIndex, correctIndex) {
+        function checkAnswer(selectedChoice, correctChoice) {
             const feedback = document.getElementById('feedback');
-            if (selectedIndex === correctIndex) {
+            if (selectedChoice === correctChoice) {
                 const pts = currentDiff === 'easy' ? 10 : (currentDiff === 'medium' ? 15 : 20);
                 sessionScore += pts;
                 document.getElementById('current-score').innerText = sessionScore;
@@ -219,10 +244,8 @@
             setDifficulty(currentDiff);
         }
 
-        loadQuestion();
+        setDifficulty('easy');
     </script>
 </body>
 </html>
-   </script>
-</body>
-</html>
+

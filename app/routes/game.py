@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
 from flask_login import login_required, current_user
 from app.models import db, User, Score
 
@@ -44,4 +44,25 @@ def save_score():
         'new_coins': current_user.coins,
         'new_level': current_user.level
     })
+
+@game_bp.route('/shop')
+@login_required
+def shop():
+    return render_template('shop.html', user=current_user)
+
+@game_bp.route('/buy-item', methods=['POST'])
+@login_required
+def buy_item():
+    cost = int(request.form.get('cost', 0))
+    item_name = request.form.get('item_name', 'Item')
+    
+    if current_user.coins >= cost:
+        current_user.coins -= cost
+        db.session.commit()
+        flash(f'Tahniah! Anda berjaya membeli {item_name}! 🎉', 'success')
+    else:
+        flash('Syiling tidak mencukupi untuk membeli item ini! 🪙', 'error')
+        
+    return redirect(url_for('game.shop'))
+
 
