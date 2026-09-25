@@ -1,0 +1,18 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+class Config:
+    SECRET_KEY = os.getenv("SECRET_KEY", "dev_secret_key_default")
+    
+    # Supabase / PostgreSQL database connection setup
+    db_url = os.getenv("DATABASE_URL")
+    
+    # Handle SQLAlchemy compatibility for postgres:// URI prefixes from cloud providers
+    if db_url and db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+        
+    # Local fallback sqlite DB if DATABASE_URL is not set or empty
+    SQLALCHEMY_DATABASE_URI = db_url or "sqlite:///jombaca.db"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False

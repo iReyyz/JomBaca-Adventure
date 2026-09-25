@@ -1,0 +1,69 @@
+:root {
+    --primary: #FF5722;
+    --primary-light: #FF8A65;
+    --secondary: #4CAF50;
+    --accent: #FFEB3B;
+    --bg-color: #FFFDE7;
+    --card-bg: #FFFFFF;
+    --text-color: #3E2723;
+    --font-family: 'Fredoka', 'Comic Sans MS', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    font-family: var(--font-family);
+    color: var(--text-color);
+}
+
+.auth-container {
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 30px;
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.title {
+    color: var(--primary);
+    font-size: 2.2rem;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--primary-light);
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.btn-primary {
+    background-color: var(--secondary);
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.btn-primary:hover {
+    background-color: #388E3C;
+}
