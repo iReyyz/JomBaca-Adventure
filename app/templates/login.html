@@ -3,32 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log Masuk - JomBaca Adventure</title>
+    <title>JomBaca Adventure - Masuk & Daftar</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #666;
+        }
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <div class="auth-container">
-        <h1 class="title">JomBaca Adventure 📚</h1>
+        <h1 class="title">JomBaca Adventure 📚🎮</h1>
         
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('login')">Log Masuk</button>
+            <button class="tab-btn" onclick="switchTab('register')">Daftar Akaun</button>
+        </div>
+
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
-              <div class="alert alert-{{ category }}" style="color: red; margin-bottom: 10px;">{{ message }}</div>
+              <div class="alert alert-{{ category }}" style="color: #d32f2f; background: #ffebee; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-weight: bold;">
+                {{ message }}
+              </div>
             {% endfor %}
           {% endif %}
         {% endwith %}
 
-        <form action="{{ url_for('auth.login') }}" method="POST">
-            <div class="form-group">
-                <label for="username">Nama Pengguna:</label>
-                <input type="text" id="username" name="username" required autocomplete="off">
-            </div>
-            <div class="form-group">
-                <label for="password">Kata Laluan:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit" class="btn-primary">Mula Pengembaraan! 🚀</button>
-        </form>
+        <!-- Form Log Masuk -->
+        <div id="login-section" class="form-section active">
+            <form action="{{ url_for('auth.login') }}" method="POST">
+                <div class="form-group">
+                    <label for="login-username">Nama Pengguna:</label>
+                    <input type="text" id="login-username" name="username" required autocomplete="off" placeholder="Masukkan nama pengguna">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Kata Laluan:</label>
+                    <input type="password" id="login-password" name="password" required placeholder="Masukkan kata laluan">
+                </div>
+                <button type="submit" class="btn-primary">Mula Pengembaraan! 🚀</button>
+            </form>
+        </div>
+
+        <!-- Form Daftar Akaun -->
+        <div id="register-section" class="form-section">
+            <form action="{{ url_for('auth.register') }}" method="POST">
+                <div class="form-group">
+                    <label for="reg-username">Nama Pengguna Baru:</label>
+                    <input type="text" id="reg-username" name="username" required autocomplete="off" placeholder="Cipta nama pengguna">
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Kata Laluan Baru:</label>
+                    <input type="password" id="reg-password" name="password" required placeholder="Cipta kata laluan">
+                </div>
+                <button type="submit" class="btn-primary" style="background-color: var(--primary);">Daftar & Mula Main! ✨</button>
+            </form>
+        </div>
     </div>
+
+    <script>
+        function switchTab(tab) {
+            const loginBtn = document.querySelectorAll('.tab-btn')[0];
+            const regBtn = document.querySelectorAll('.tab-btn')[1];
+            const loginSec = document.getElementById('login-section');
+            const regSec = document.getElementById('register-section');
+
+            if (tab === 'login') {
+                loginBtn.classList.add('active');
+                regBtn.classList.remove('active');
+                loginSec.classList.add('active');
+                regSec.classList.remove('active');
+            } else {
+                regBtn.classList.add('active');
+                loginBtn.classList.remove('active');
+                regSec.classList.add('active');
+                loginSec.classList.remove('active');
+            }
+        }
+    </script>
 </body>
 </html>
+
