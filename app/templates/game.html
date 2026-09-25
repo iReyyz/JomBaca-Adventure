@@ -11,12 +11,31 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            max-width: 500px;
-            margin: 40px auto;
+            max-width: 550px;
+            margin: 30px auto;
             text-align: center;
         }
+        .difficulty-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .diff-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid #ccc;
+            background: #f5f5f5;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .diff-btn.active[data-diff="easy"] { background: #C8E6C9; border-color: #388E3C; color: #1B5E20; }
+        .diff-btn.active[data-diff="medium"] { background: #FFE0B2; border-color: #F57C00; color: #E65100; }
+        .diff-btn.active[data-diff="hard"] { background: #FFCDD2; border-color: #D32F2F; color: #B71C1C; }
+        
         .question-box {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: bold;
             color: var(--primary);
             background: #FFF3E0;
@@ -24,6 +43,10 @@
             border-radius: 15px;
             margin: 20px 0;
             border: 3px dashed var(--primary-light);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .options-grid {
             display: grid;
@@ -36,7 +59,7 @@
             border: 2px solid var(--secondary);
             color: #2E7D32;
             padding: 15px;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: bold;
             border-radius: 12px;
             cursor: pointer;
@@ -45,14 +68,17 @@
         .option-btn:hover {
             background: var(--secondary);
             color: white;
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
         .score-board {
             display: flex;
             justify-content: space-around;
             margin-bottom: 15px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
+            background: #F5F5F5;
+            padding: 10px;
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -60,18 +86,23 @@
     <div class="game-card">
         <h2>Mini Game: Kenal Huruf & Perkataan 🎯</h2>
         
+        <div class="difficulty-selector">
+            <button class="diff-btn active" data-diff="easy" onclick="setDifficulty('easy')">🌱 Mudah</button>
+            <button class="diff-btn" data-diff="medium" onclick="setDifficulty('medium')">⭐ Biasa</button>
+            <button class="diff-btn" data-diff="hard" onclick="setDifficulty('hard')">🔥 Susah</button>
+        </div>
+
         <div class="score-board">
             <span>⭐ Skor: <span id="current-score">0</span></span>
-            <span>🪙 Coin: {{ user.coins }}</span>
+            <span>✨ XP: <span id="user-xp">{{ user.xp }}</span></span>
+            <span>🪙 Coin: <span id="user-coins">{{ user.coins }}</span></span>
         </div>
 
-        <p id="instruction" style="font-size: 1.2rem; font-weight: bold;">Pilih huruf atau perkataan yang betul!</p>
+        <p id="instruction" style="font-size: 1.2rem; font-weight: bold;">Pilih jawapan yang betul!</p>
 
-        <div class="question-box" id="question">A</div>
+        <div class="question-box" id="question">...</div>
 
-        <div class="options-grid" id="options">
-            <!-- Pilihan akan dimasukkan melalui JavaScript -->
-        </div>
+        <div class="options-grid" id="options"></div>
 
         <div id="feedback" style="margin-top: 20px; font-size: 1.3rem; font-weight: bold; height: 30px;"></div>
 
@@ -81,51 +112,83 @@
     </div>
 
     <script>
-        const questions = [
-            { prompt: "Manakah huruf vokal 'A'?", target: "A", options: ["A", "B", "M", "K"], answer: "A" },
-            { prompt: "Lengkapkan perkataan: B _ T U (Stone)", target: "B A T U", options: ["A", "E", "I", "O"], answer: "A" },
-            { prompt: "Manakah perkataan yang betul?", target: "🐱 Kucing", options: ["Kucing", "Kambing", "Kuda", "Kera"], answer: "Kucing" },
-            { prompt: "Huruf apakah ini?", target: "Z", options: ["N", "Z", "M", "W"], answer: "Z" },
-            { prompt: "Lengkapkan: N A S _", target: "N A S I", options: ["I", "U", "O", "A"], answer: "I" }
-        ];
+        // Bank Soalan Mengikut Tahap Kesukaran (Jawapan tersembunyi & disulitkan)
+        const bankSoalan = {
+            easy: [
+                { prompt: "Apakah huruf vokal pertama?", display: "___", choices: ["A", "B", "M", "K"], key: 0 },
+                { prompt: "Lengkapkan ejaan: B _ T U (Stone)", display: "B _ T U", choices: ["E", "A", "I", "O"], key: 1 },
+                { prompt: "Huruf apakah yang bermula untuk 'Ayam'?", display: "🐓 Ayam", choices: ["A", "C", "D", "B"], key: 0 },
+                { prompt: "Lengkapkan ejaan: I B _ (Mother)", display: "I B _", choices: ["A", "U", "I", "E"], key: 1 },
+                { prompt: "Huruf vokal untuk 'Ular':", display: "🐍 Ular", choices: ["O", "I", "U", "E"], key: 2 }
+            ],
+            medium: [
+                { prompt: "Ejaan yang betul untuk haiwan ini:", display: "🐱 (Cat)", choices: ["Kucing", "Kambing", "Kuda", "Kera"], key: 0 },
+                { prompt: "Lengkapkan suku kata: BU - ___ (Book)", display: "BU - ___", choices: ["KU", "SU", "LU", "TU"], key: 0 },
+                { prompt: "Lengkapkan suku kata: RA - ___ (King)", display: "RA - ___", choices: ["JA", "MA", "CA", "PA"], key: 0 },
+                { prompt: "Pilih perkataan yang betul:", display: "🏫 Tempat Belajar", choices: ["Rumah", "Sekolah", "Taman", "Kedai"], key: 1 },
+                { prompt: "Lengkapkan perkataan: B O - L _", display: "⚽ Bola", choices: ["A", "E", "I", "O"], key: 0 }
+            ],
+            hard: [
+                { prompt: "Susun suku kata menjadi perkataan:", display: "KAP - TUL", choices: ["Tulkap", "Laptul", "Kaptul", "Tukal"], key: 2 },
+                { prompt: "Apakah binaan ayat yang betul?", display: "Saya ___ nasi.", choices: ["minum", "makan", "tidur", "lari"], key: 1 },
+                { prompt: "Cari ejaan yang betul:", display: "🌺 Bunga Kebangsaan", choices: ["Bunga Raya", "Bunga Mawar", "Bunga Orkid", "Bunga Melur"], key: 0 },
+                { prompt: "Lengkapkan frasa: Kereta ini sangat ___.", choices: ["laju", "tinggi", "manis", "wangi"], key: 0 },
+                { prompt: "Pilih kata nama haiwan udara:", choices: ["Ikan", "Burung", "Kucing", "Ular"], key: 1 }
+            ]
+        };
 
+        let currentDiff = 'easy';
         let currentIdx = 0;
-        let score = 0;
+        let sessionScore = 0;
+
+        function setDifficulty(diff) {
+            currentDiff = diff;
+            document.querySelectorAll('.diff-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.diff === diff);
+            });
+            currentIdx = 0;
+            sessionScore = 0;
+            document.getElementById('current-score').innerText = sessionScore;
+            loadQuestion();
+        }
 
         function loadQuestion() {
-            if (currentIdx >= questions.length) {
+            const list = bankSoalan[currentDiff];
+            if (currentIdx >= list.length) {
                 document.getElementById('question').innerText = "🎉 TAHNIAH!";
-                document.getElementById('instruction').innerText = `Anda telah tamat permainan dengan Skor: ${score}!`;
-                document.getElementById('options').innerHTML = `<button class="option-btn" onclick="location.reload()" style="grid-column: span 2;">Main Lagi 🔄</button>`;
+                document.getElementById('instruction').innerText = `Tamat Tahap ${currentDiff.toUpperCase()}! Skor: ${sessionScore}`;
+                document.getElementById('options').innerHTML = `<button class="option-btn" onclick="saveAndRestart()" style="grid-column: span 2; background: var(--primary); color: white;">Simpan Skor & Main Lagi 💾</button>`;
                 document.getElementById('feedback').innerText = "";
+                saveScoreToBackend(sessionScore);
                 return;
             }
 
-            const q = questions[currentIdx];
+            const q = list[currentIdx];
             document.getElementById('instruction').innerText = q.prompt;
-            document.getElementById('question').innerText = q.target;
+            document.getElementById('question').innerText = q.display;
             
             const optionsDiv = document.getElementById('options');
             optionsDiv.innerHTML = '';
             
-            q.options.forEach(opt => {
+            q.choices.forEach((choice, index) => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
-                btn.innerText = opt;
-                btn.onclick = () => checkAnswer(opt, q.answer);
+                btn.innerText = choice;
+                btn.onclick = () => checkAnswer(index, q.key);
                 optionsDiv.appendChild(btn);
             });
         }
 
-        function checkAnswer(selected, correct) {
+        function checkAnswer(selectedIndex, correctIndex) {
             const feedback = document.getElementById('feedback');
-            if (selected === correct) {
-                score += 10;
-                document.getElementById('current-score').innerText = score;
-                feedback.style.color = "green";
+            if (selectedIndex === correctIndex) {
+                const pts = currentDiff === 'easy' ? 10 : (currentDiff === 'medium' ? 15 : 20);
+                sessionScore += pts;
+                document.getElementById('current-score').innerText = sessionScore;
+                feedback.style.color = "#2E7D32";
                 feedback.innerText = "Syabas! Jawapan Betul! 🥳";
             } else {
-                feedback.style.color = "red";
+                feedback.style.color = "#C62828";
                 feedback.innerText = "Alamak! Cuba lagi ya! 😅";
             }
 
@@ -133,10 +196,33 @@
                 feedback.innerText = "";
                 currentIdx++;
                 loadQuestion();
-            }, 1200);
+            }, 1000);
+        }
+
+        function saveScoreToBackend(pts) {
+            fetch('/save-score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ score: pts })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    document.getElementById('user-xp').innerText = data.new_xp;
+                    document.getElementById('user-coins').innerText = data.new_coins;
+                }
+            })
+            .catch(err => console.error("Error saving score:", err));
+        }
+
+        function saveAndRestart() {
+            setDifficulty(currentDiff);
         }
 
         loadQuestion();
     </script>
+</body>
+</html>
+   </script>
 </body>
 </html>
