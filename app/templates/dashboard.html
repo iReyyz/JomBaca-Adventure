@@ -26,10 +26,23 @@
         .badge-done {
             background: #4CAF50;
             color: white;
-            padding: 4px 10px;
+            padding: 6px 14px;
             border-radius: 15px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: bold;
+        }
+        .btn-claim {
+            background: #FF9800;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 15px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn-claim:hover {
+            background: #F57C00;
         }
         .action-grid {
             display: grid;
@@ -37,46 +50,61 @@
             gap: 15px;
             margin-top: 20px;
         }
+        .user-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-avatar-big {
+            font-size: 3.5rem;
+            background: #FFF3E0;
+            border: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 75px;
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
     <div style="padding: 20px; max-width: 800px; margin: 0 auto;">
-        <h1 style="color: var(--primary);">Selamat Datang, {{ user.username }}! 🌟</h1>
+        
+        <div class="user-header">
+            <div class="user-avatar-big">{{ user.avatar or '👶🏼' }}</div>
+            <div>
+                <h1 style="color: var(--primary); margin: 0;">Selamat Datang, {{ user.username }}! 🌟</h1>
+                {% if boost_active %}
+                    <span style="background: #FFF9C4; color: #F57F17; border: 1px solid #FBC02D; padding: 3px 8px; border-radius: 10px; font-weight: bold; font-size: 0.85rem;">⚡ EXP Boost Active (+50% Bonus)</span>
+                {% endif %}
+            </div>
+        </div>
         
         <!-- Status Profil -->
-        <div class="dashboard-card">
+        <div class="dashboard-card" style="margin-top: 20px;">
             <h3 style="margin-top: 0; color: #333;">📊 Profil Pengembara</h3>
             <p><strong>Tahap (Level):</strong> 🎚️ Level {{ user.level }}</p>
-            <p><strong>Mata XP:</strong> ✨ {{ user.xp }} XP</p>
-            <p><strong>Syiling (Coins):</strong> 🪙 {{ user.coins }} Syiling</p>
+            <p><strong>Mata XP:</strong> ✨ <span id="dash-xp">{{ user.xp }}</span> XP</p>
+            <p><strong>Syiling (Coins):</strong> 🪙 <span id="dash-coins">{{ user.coins }}</span> Syiling</p>
         </div>
 
         <!-- Daily Quests (Tugasan Harian Budak) -->
         <div class="dashboard-card">
-            <h3 style="margin-top: 0; color: var(--primary);">📅 Tugasan Harian (Daily Quests)</h3>
+            <h3 style="margin-top: 0; color: var(--primary);">📅 Tugasan Harian (Daily Quest)</h3>
             
             <div class="quest-item">
                 <div>
-                    <strong>1. Log masuk hari ini ☀️</strong>
-                    <div style="font-size: 0.9rem; color: #666;">Ganjaran: +10 XP & 🪙 5 Syiling</div>
+                    <strong>Tugasan Hari Ini: Main & Belajar ☀️</strong>
+                    <div style="font-size: 0.9rem; color: #666;">Ganjaran Harian: +30 XP & 🪙 15 Syiling</div>
                 </div>
-                <span class="badge-done">✅ Selesai</span>
-            </div>
-
-            <div class="quest-item">
-                <div>
-                    <strong>2. Main 1 pusingan Mini Game 🎯</strong>
-                    <div style="font-size: 0.9rem; color: #666;">Ganjaran: +20 XP & 🪙 10 Syiling</div>
+                <div id="daily-action-container">
+                    {% if daily_completed %}
+                        <span class="badge-done">✅ Selesai</span>
+                    {% else %}
+                        <button onclick="claimDailyReward()" class="btn-claim">Tuntut Ganjaran 🎁</button>
+                    {% endif %}
                 </div>
-                <a href="{{ url_for('game.play_game') }}" style="color: var(--secondary); font-weight: bold; text-decoration: none;">Main Now ➡️</a>
-            </div>
-
-            <div class="quest-item">
-                <div>
-                    <strong>3. Capai skor 30 dalam Tahap Mudah 🏆</strong>
-                    <div style="font-size: 0.9rem; color: #666;">Ganjaran: +30 XP & 🪙 15 Syiling</div>
-                </div>
-                <a href="{{ url_for('game.play_game') }}" style="color: var(--secondary); font-weight: bold; text-decoration: none;">Cabaran ➡️</a>
             </div>
         </div>
 
@@ -90,6 +118,27 @@
             <a href="{{ url_for('auth.logout') }}" style="color: #d32f2f; font-weight: bold;">Log Keluar</a>
         </div>
     </div>
+
+    <script>
+        function claimDailyReward() {
+            fetch('/claim-daily', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    document.getElementById('dash-xp').innerText = data.new_xp;
+                    document.getElementById('dash-coins').innerText = data.new_coins;
+                    document.getElementById('daily-action-container').innerHTML = '<span class="badge-done">✅ Selesai</span>';
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(err => console.error("Ralat tuntut harian:", err));
+        }
+    </script>
 </body>
 </html>
 

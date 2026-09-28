@@ -13,11 +13,24 @@ class User(UserMixin, db.Model):
     level = db.Column(db.Integer, default=1)
     xp = db.Column(db.Integer, default=0)
     coins = db.Column(db.Integer, default=0)
+    avatar = db.Column(db.String(50), default='👶🏼')
+    exp_boost_until = db.Column(db.DateTime, nullable=True)
+    last_daily_date = db.Column(db.String(20), nullable=True) # YYYY-MM-DD
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships
     user_tasks = db.relationship('UserTask', backref='user', lazy=True)
     scores = db.relationship('Score', backref='user', lazy=True)
+    question_history = db.relationship('QuestionHistory', backref='user', lazy=True)
+
+
+class QuestionHistory(db.Model):
+    __tablename__ = 'question_history'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    question_id = db.Column(db.String(100), nullable=False)
+    seen_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class Task(db.Model):
