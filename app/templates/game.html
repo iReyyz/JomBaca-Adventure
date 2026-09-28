@@ -126,54 +126,6 @@
             font-size: 4rem;
             line-height: 1;
         }
-
-        .reward-box {
-            margin: 15px 0 20px;
-            padding: 15px;
-            border-radius: 15px;
-            background: #FFF8E1;
-            border: 2px solid #FFD54F;
-        }
-
-        .reward-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #6D4C41;
-        }
-
-        .reward-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .reward-btn {
-            border: 2px solid #FFB300;
-            background: #FFF3CD;
-            color: #6D4C41;
-            border-radius: 12px;
-            padding: 10px 6px;
-            font-weight: bold;
-            cursor: pointer;
-            min-height: 70px;
-        }
-
-        .reward-btn:hover {
-            transform: scale(1.03);
-            background: #FFE082;
-        }
-
-        #reward-feedback {
-            margin-top: 10px;
-            min-height: 22px;
-            font-weight: bold;
-        }
-
-        @media (max-width: 500px) {
-            .reward-grid {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
 
@@ -202,22 +154,6 @@
             <span>🪙 Coin: <span id="user-coins">{{ user.coins }}</span></span>
         </div>
 
-        <div class="reward-box">
-            <div class="reward-title">🎁 Tukar Coin kepada Reward</div>
-            <div class="reward-grid">
-                <button class="reward-btn" onclick="redeemReward('profile_frame', 50)">
-                    🖼️ Bingkai Profil<br><small>50 🪙</small>
-                </button>
-                <button class="reward-btn" onclick="redeemReward('xp_bonus', 100)">
-                    ✨ +50 XP<br><small>100 🪙</small>
-                </button>
-                <button class="reward-btn" onclick="redeemReward('badge', 150)">
-                    🏅 Lencana<br><small>150 🪙</small>
-                </button>
-            </div>
-            <div id="reward-feedback"></div>
-        </div>
-
         <button onclick="startGameSession()" class="btn-primary"
             style="margin-bottom: 15px; width: 100%; background: #4CAF50;">Mula Pusingan Baru 🚀</button>
 
@@ -237,207 +173,108 @@
     </div>
 
     <script>
-        // BANK SOALAN MENGEJA
-        // 150 soalan bagi setiap tahap. Tiada clue/gambar dipaparkan pada soalan.
-        // Gambar emoji hanya digunakan sebagai pilihan jawapan untuk membantu pengenalan perkataan.
-        const spellingWords = {
-            mudah: ["ular", "buku", "bola", "batu", "nasi", "kuda", "topi", "kaki", "mata", "ayam", "ikan", "susu", "meja", "pintu", "kasut", "baju", "sabun", "sikat", "gigi", "daun", "bunga", "awan", "hujan", "angin", "panas", "sejuk", "pagi", "malam", "siang", "bulan", "tanah", "pasir", "jalan", "roti", "kopi", "gula", "garam", "telur", "udang", "lembu", "arnab", "tikus", "itik", "panda", "zebra", "gajah", "singa", "rusa", "katak", "cicak", "semut", "lebah", "lalat", "tupai", "siput", "ketam", "paus", "lima", "enam", "tujuh", "lapan", "merah", "biru", "hijau", "putih", "hitam", "ungu", "oren", "pink", "pokok", "akar", "buah", "biji", "tasik", "laut", "pulau", "bubur", "kari", "bilis", "belut", "angsa", "koala", "unta", "tebu", "padi", "labu", "limau", "epal", "jambu", "betik", "melon", "kapal", "teksi", "lori", "kotak", "cawan", "gelas", "sudu", "garpu", "dapur", "rumah", "bilik", "pagar", "taman", "kolam", "kasih", "adik", "abang", "kakak", "emak", "ayah", "nenek", "datuk", "kawan", "guru", "murid", "polis", "ceria", "sedih", "takut", "marah", "suka", "rajin", "malas", "baik", "jahat", "cepat", "besar", "kecil", "bawah", "atas", "depan", "dekat", "jauh", "dalam", "luar", "kiri", "kanan", "awal", "akhir", "warna", "duduk", "makan", "minum", "baca", "tulis", "buka", "tutup", "masuk", "tidur"],
-            normal: ["sekolah", "kucing", "burung", "kereta", "kertas", "pandai", "pensel", "belajar", "membaca", "menulis", "bermain", "makanan", "minuman", "rumput", "pokok", "bunga", "sungai", "gunung", "pantai", "bandar", "kampung", "rumah", "bilik", "tingkap", "pintu", "kerusi", "meja", "kasut", "seluar", "baju", "topi", "payung", "hujan", "panas", "sejuk", "pagi", "malam", "petang", "minggu", "bulan", "bintang", "awan", "angin", "ribut", "kilat", "guruh", "pelangi", "kelapa", "pisang", "mangga", "jambu", "betik", "durian", "sarapan", "makan", "arnab", "hamster", "kura", "ayam", "itik", "angsa", "kambing", "lembu", "kerbau", "gajah", "harimau", "singa", "doktor", "polis", "guru", "murid", "pekerja", "pemandu", "cerita", "gambar", "warna", "merah", "biru", "hijau", "kuning", "putih", "hitam", "ungu", "jingga", "kelabu", "cantik", "bersih", "kotor", "tinggi", "rendah", "besar", "kecil", "cepat", "lambat", "rajin", "malas", "gembira", "sedih", "marah", "takut", "senyum", "ketawa", "berlari", "duduk", "berdiri", "mengira", "telefon", "tablet", "kamera", "radio", "bantal", "selimut", "tilam", "langsir", "cermin", "almari", "dapur", "tandas", "garaj", "halaman", "pagar", "tangga", "siling", "lantai", "dinding", "basikal", "kapal", "terbang", "jalan", "raya", "sayuran", "bayam", "sawi", "lobak", "tomato", "kentang", "bawang", "kacang", "jagung", "makmal", "kelas", "dewan", "pejabat", "kantin", "pelajar", "sahabat", "negara", "bahasa", "budaya", "sejarah"],
-            susah: ["khusus", "fotosintesis", "amfibia", "biodiversiti", "ekosistem", "atmosfera", "teknologi", "komunikasi", "pendidikan", "masyarakat", "kebangsaan", "kemerdekaan", "perpaduan", "kewarganegaraan", "tanggungjawab", "keselamatan", "kesihatan", "kebersihan", "pemuliharaan", "pencemaran", "perubahan", "kelestarian", "pembangunan", "keseimbangan", "sumber", "semula", "organisasi", "pentadbiran", "perundangan", "perlembagaan", "ekonomi", "perdagangan", "perniagaan", "keusahawanan", "kreativiti", "inovasi", "penyelidikan", "pengetahuan", "kemahiran", "pembelajaran", "kecerdasan", "algoritma", "pengaturcaraan", "pangkalan", "rangkaian", "pemprosesan", "maklumat", "analisis", "statistik", "kebarangkalian", "matematik", "geometri", "algebra", "aritmetik", "persamaan", "pemboleh", "koordinat", "pengukuran", "mikroorganisma", "bakteria", "organisma", "habitat", "populasi", "spesies", "evolusi", "genetik", "biologi", "gravitasi", "tenaga", "elektrik", "magnetik", "molekul", "tindak", "larutan", "alkali", "kesusasteraan", "tatabahasa", "perbendaharaan", "sebutan", "imbuhan", "sintaksis", "semantik", "linguistik", "konservasi", "eksploitasi", "industri", "pertanian", "perhutanan", "perikanan", "perkilangan", "pengangkutan", "kesamarataan", "kemanusiaan", "kesejahteraan", "kerjasama", "kesederhanaan", "kebijaksanaan", "ketekunan", "kejujuran", "profesionalisme", "produktiviti", "keberkesanan", "kecekapan", "keberanian", "kesabaran", "ketelitian", "perancangan", "pengurusan", "kepimpinan", "strategi", "pelaksanaan", "penilaian", "pemantauan", "dokumentasi", "persekitaran", "kepelbagaian", "kewangan", "pelaburan", "perbelanjaan", "pendapatan", "perkhidmatan", "antarabangsa", "perindustrian", "perbandaran", "infrastruktur", "kemudahan", "pengairan", "makanan", "pemakanan", "mental", "kecergasan", "perubatan", "diagnosis", "rawatan", "pencegahan", "vaksinasi", "penyakit", "jangkitan", "antibodi", "imunisasi", "astronomi", "galaksi", "planet", "graviti", "teleskop", "nuklear", "elektromagnetik", "termodinamik", "geografi", "topografi"]
+        // BANK SOALAN MENGEJA (BAHASA MALAYSIA)
+        const bankMengeja = {
+            mudah: [
+                { id: "e_m_1", prompt: "Pilih ejaan yang betul untuk gambar ini:", clue: "🐍", display_html: "<span class='suku-biru'>U</span><span class='suku-merah'>LAR</span>", choices: ["🐍", "🐱", "🐶", "🐟"], answer: "🐍" },
+                { id: "e_m_2", prompt: "Lengkapkan huruf yang hilang:", clue: "🐍", display_html: "<span class='suku-biru'>UL</span><span class='suku-merah'>_R</span>", choices: ["A", "E", "I", "O"], answer: "A" },
+                { id: "e_m_3", prompt: "Lengkapkan ejaan BOLA:", clue: "⚽", display_html: "<span class='suku-biru'>BO</span><span class='suku-merah'>_A</span>", choices: ["L", "M", "N", "K"], answer: "L" },
+                { id: "e_m_4", prompt: "Pilih gambar yang sepadan dengan ejaan:", clue: "📖", display_html: "<span class='suku-biru'>BU</span><span class='suku-merah'>KU</span>", choices: ["📖", "✏️", "🏫", "🎒"], answer: "📖" },
+                { id: "e_m_5", prompt: "Lengkapkan ejaan BATU:", clue: "🪨", display_html: "<span class='suku-biru'>BA</span><span class='suku-merah'>_U</span>", choices: ["T", "S", "R", "P"], answer: "T" },
+                { id: "e_m_6", prompt: "Lengkapkan ejaan Nasi:", clue: "🍚", display_html: "<span class='suku-biru'>NA</span><span class='suku-merah'>_I</span>", choices: ["S", "B", "M", "K"], answer: "S" },
+                { id: "e_m_7", prompt: "Pilih gambar untuk ejaan IBU:", clue: "👩", display_html: "<span class='suku-biru'>I</span><span class='suku-merah'>BU</span>", choices: ["👩", "👨", "👶", "👧"], answer: "👩" },
+                { id: "e_m_8", prompt: "Lengkapkan huruf hilang:", clue: "🦆", display_html: "<span class='suku-biru'>IT</span><span class='suku-merah'>_K</span>", choices: ["U", "A", "I", "E"], answer: "U" },
+                { id: "e_m_9", prompt: "Ejaan KUDA yang betul:", clue: "🐎", display_html: "<span class='suku-biru'>KU</span><span class='suku-merah'>DA</span>", choices: ["🐎", "🐮", "🐐", "🐘"], answer: "🐎" },
+                { id: "e_m_10", prompt: "Lengkapkan ejaan TOP I:", clue: "🧢", display_html: "<span class='suku-biru'>TO</span><span class='suku-merah'>P_</span>", choices: ["I", "U", "A", "E"], answer: "I" }
+            ],
+            normal: [
+                { id: "e_n_1", prompt: "Lengkapkan ejaan KUCING:", clue: "🐱", display_html: "<span class='suku-biru'>KU</span><span class='suku-merah'>CING</span>", choices: ["🐱", "🐶", "🐯", "🐰"], answer: "🐱" },
+                { id: "e_n_2", prompt: "Isi tempat kosong bagi SEKOLAH:", clue: "🏫", display_html: "<span class='suku-biru'>SEKO</span><span class='suku-merah'>L_H</span>", choices: ["A", "E", "I", "O"], answer: "A" },
+                { id: "e_n_3", prompt: "Lengkapkan ejaan BURUNG:", clue: "🐦", display_html: "<span class='suku-biru'>BU</span><span class='suku-merah'>R_NG</span>", choices: ["U", "A", "O", "I"], answer: "U" },
+                { id: "e_n_4", prompt: "Ejaan warna MERAH:", clue: "🔴", display_html: "<span class='suku-biru'>ME</span><span class='suku-merah'>RAH</span>", choices: ["🔴", "🔵", "🟡", "🟢"], answer: "🔴" },
+                { id: "e_n_5", prompt: "Lengkapkan perkataan PISANG:", clue: "🍌", display_html: "<span class='suku-biru'>PI</span><span class='suku-merah'>S_NG</span>", choices: ["A", "E", "I", "U"], answer: "A" },
+                { id: "e_n_6", prompt: "Lengkapkan ejaan KERETA:", clue: "🚗", display_html: "<span class='suku-biru'>KE</span><span class='suku-merah'>RETA</span>", choices: ["🚗", "🚲", "✈️", "🚢"], answer: "🚗" },
+                { id: "e_n_7", prompt: "Isi tempat kosong KERTAS:", clue: "📄", display_html: "<span class='suku-biru'>KER</span><span class='suku-merah'>T_S</span>", choices: ["A", "I", "U", "O"], answer: "A" },
+                { id: "e_n_8", prompt: "Lengkapkan ejaan PANDAI:", clue: "🎓", display_html: "<span class='suku-biru'>PAN</span><span class='suku-merah'>D_I</span>", choices: ["A", "E", "O", "U"], answer: "A" }
+            ],
+            susah: [
+                { id: "e_s_1", prompt: "Pilih ejaan istilah khusus sains yang betul bagi fotosintesis:", clue: "🌱", display_html: "FOTOSINTESIS", choices: ["Fotosintesis", "Potosintesis", "Fotosintisis", "Fotosentisis"], answer: "Fotosintesis" },
+                { id: "e_s_2", prompt: "Pilih ejaan tepat bagi haiwan amfibia:", clue: "🐸", display_html: "AMFIBIA", choices: ["Amfibia", "Amfebea", "Amfibiya", "Ampibia"], answer: "Amfibia" },
+                { id: "e_s_3", prompt: "Pilih ejaan betul untuk fenomena alam:", clue: "🌈", display_html: "PELANGI", choices: ["Pelangi", "Pelanggi", "Polangi", "Pelangie"], answer: "Pelangi" },
+                { id: "e_s_4", prompt: "Isi huruf bagi istilah KHUSUS:", clue: "🎯", display_html: "K H _ S U S", choices: ["U", "O", "A", "I"], answer: "U" },
+                { id: "e_s_5", prompt: "Pilih ejaan betul untuk KEBANGSAAN:", clue: "🇲🇾", display_html: "KEBANGSAAN", choices: ["Kebangsaan", "Kembangsaan", "Kebangsan", "Kebangsaan"], answer: "Kebangsaan" },
+                { id: "e_s_6", prompt: "Apakah ejaan betul bagi CEKAP?", clue: "⚡", display_html: "C E K A P", choices: ["Cekap", "Cakap", "Cekat", "Cekab"], answer: "Cekap" }
+            ]
         };
 
-        const emojiMap = { "ular": "🐍", "buku": "📖", "bola": "⚽", "batu": "🪨", "nasi": "🍚", "kuda": "🐎", "topi": "🧢", "kaki": "🦶", "mata": "👁️", "ayam": "🐔", "ikan": "🐟", "susu": "🥛", "meja": "🪑", "pintu": "🚪", "kasut": "👟", "baju": "👕", "sabun": "🧼", "sikat": "🪥", "gigi": "🦷", "daun": "🍃", "bunga": "🌸", "awan": "☁️", "hujan": "🌧️", "angin": "💨", "panas": "☀️", "sejuk": "🥶", "pagi": "🌅", "malam": "🌙", "siang": "🌞", "bulan": "🌙", "tanah": "🌱", "pasir": "🏖️", "jalan": "🛣️", "roti": "🍞", "kopi": "☕", "gula": "🍬", "garam": "🧂", "telur": "🥚", "udang": "🦐", "lembu": "🐄", "arnab": "🐇", "tikus": "🐭", "itik": "🦆", "panda": "🐼", "zebra": "🦓", "gajah": "🐘", "singa": "🦁", "rusa": "🦌", "katak": "🐸", "cicak": "🦎", "semut": "🐜", "lebah": "🐝", "lalat": "🪰", "tupai": "🐿️", "siput": "🐌", "ketam": "🦀", "paus": "🐋", "merah": "🔴", "biru": "🔵", "hijau": "🟢", "putih": "⚪", "hitam": "⚫", "ungu": "🟣", "oren": "🟠", "pink": "🩷", "pokok": "🌳", "akar": "🌿", "buah": "🍎", "biji": "🌰", "tasik": "🏞️", "laut": "🌊", "pulau": "🏝️", "bubur": "🥣", "kari": "🍛", "angsa": "🦢", "koala": "🐨", "unta": "🐪", "tebu": "🎋", "padi": "🌾", "labu": "🎃", "limau": "🍊", "epal": "🍎", "jambu": "🍐", "betik": "🍈", "melon": "🍈", "kapal": "🚢", "teksi": "🚕", "lori": "🚚", "kotak": "📦", "cawan": "☕", "gelas": "🥛", "sudu": "🥄", "garpu": "🍴", "dapur": "🍳", "rumah": "🏠", "bilik": "🛏️", "pagar": "🚧", "taman": "🌳", "kolam": "🏊", "kasih": "❤️", "adik": "🧒", "abang": "👦", "kakak": "👧", "emak": "👩", "ayah": "👨", "nenek": "👵", "datuk": "👴", "kawan": "🧑‍🤝‍🧑", "guru": "👩‍🏫", "murid": "🎒", "polis": "👮", "ceria": "😊", "sedih": "😢", "takut": "😨", "marah": "😠", "suka": "😍", "rajin": "📚", "malas": "😴", "baik": "👍", "jahat": "😈", "cepat": "⚡", "besar": "🐘", "kecil": "🐜", "bawah": "⬇️", "atas": "⬆️", "depan": "➡️", "dekat": "📍", "jauh": "🔭", "dalam": "📥", "luar": "🌳", "kiri": "⬅️", "kanan": "➡️", "awal": "⏰", "akhir": "🏁", "warna": "🎨", "duduk": "🪑", "makan": "🍽️", "minum": "🥤", "baca": "📖", "tulis": "✍️", "buka": "🔓", "tutup": "🔒", "masuk": "🚪", "tidur": "😴", "mandi": "🚿", "basuh": "🧼", "sapu": "🧹", "masak": "👨‍🍳", "kerja": "💼", "main": "🎮", "lari": "🏃", "sekolah": "🏫", "kucing": "🐱", "burung": "🐦", "kereta": "🚗", "kertas": "📄", "pandai": "🎓", "pensel": "✏️", "belajar": "📚", "membaca": "📖", "menulis": "✍️", "bermain": "🎮", "makanan": "🍽️", "minuman": "🥤", "rumput": "🌿", "sungai": "🏞️", "gunung": "⛰️", "pantai": "🏖️", "bandar": "🏙️", "kampung": "🏡", "tingkap": "🪟", "kerusi": "🪑", "beg": "🎒", "payung": "☂️", "petang": "🌇", "minggu": "📅", "matahari": "☀️", "bintang": "⭐", "ribut": "🌩️", "kilat": "⚡", "guruh": "🌩️", "pelangi": "🌈", "kelapa": "🥥", "pisang": "🍌", "mangga": "🥭", "durian": "🥭", "tembikai": "🍉", "rambutan": "🍒", "kambing": "🐐", "harimau": "🐯", "doktor": "🧑‍⚕️", "pekerja": "👷", "pemandu": "🧑‍✈️", "jururawat": "👩‍⚕️", "cerita": "📚", "kuning": "🟡", "jingga": "🟠", "kelabu": "🩶", "cantik": "✨", "bersih": "🧽", "kotor": "🗑️", "tinggi": "📏", "rendah": "⬇️", "gembira": "😄", "menangis": "😭", "berjalan": "🚶", "berlari": "🏃", "melompat": "🤸", "berdiri": "🧍", "mengira": "🔢", "telefon": "📱", "komputer": "💻", "tablet": "📱", "kamera": "📷", "televisyen": "📺", "radio": "📻", "bantal": "🛏️", "selimut": "🛌", "tilam": "🛏️", "langsir": "🪟", "cermin": "🪞", "almari": "🗄️", "tandas": "🚻", "garaj": "🚗", "halaman": "🌳", "tangga": "🪜", "siling": "🏠", "lantai": "🧱", "dinding": "🧱", "basikal": "🚲", "motosikal": "🏍️", "terbang": "✈️", "lapangan": "🛫", "jambatan": "🌉", "sayuran": "🥬", "bayam": "🥬", "sawi": "🥬", "lobak": "🥕", "tomato": "🍅", "kentang": "🥔", "bawang": "🧅", "kacang": "🥜", "jagung": "🌽", "perpustakaan": "📚", "makmal": "🧪", "kelas": "🏫", "dewan": "🏛️", "pejabat": "🏢", "kantin": "🍽️", "pelajar": "🎓", "sahabat": "🧑‍🤝‍🧑", "keluarga": "👨‍👩‍👧‍👦", "masyarakat": "👥", "negara": "🌍", "bahasa": "🗣️", "budaya": "🎭", "hormat": "🙏", "sopan": "🙂", "jujur": "🤝", "sabar": "🧘", "amanah": "🔐", "berani": "🦁", "bijak": "🧠" };
-
-        function escapeHtml(value) {
-            return String(value)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
-        function coloredWord(word) {
-            const mid = Math.ceil(word.length / 2);
-            return `<span class="suku-biru">${escapeHtml(word.slice(0, mid).toUpperCase())}</span><span class="suku-merah">${escapeHtml(word.slice(mid).toUpperCase())}</span>`;
-        }
-
-        function makeLetterChoices(correct) {
-            const letters = "AEIOUBCDGHLKMNPRST";
-            const choices = [correct.toUpperCase()];
-            let guard = 0;
-            while (choices.length < 4 && guard < 100) {
-                const c = letters[Math.floor(Math.random() * letters.length)];
-                if (!choices.includes(c)) choices.push(c);
-                guard++;
-            }
-            return shuffle(choices);
-        }
-
-        function makePictureChoices(word) {
-            const correct = emojiMap[word] || "📝";
-            const pool = [
-                "🐶", "🐱", "🐭", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁", "🐮", "🐷",
-                "🐸", "🐵", "🐔", "🐧", "🐦", "🐤", "🦄", "🐝", "🦋", "🐌", "🐢", "🐍",
-                "🐠", "🐟", "🐬", "🐳", "🦀", "🍎", "🍌", "🍉", "🍊", "🍇", "🥭", "🍞",
-                "⚽", "🚗", "🚲", "✈️", "🚢", "🏠", "🏫", "📖", "✏️", "🎒", "🌳", "🌸",
-                "☀️", "🌙", "⭐", "🌈", "🔴", "🔵", "🟢", "🟡", "🟣", "🟠"
-            ];
-            const choices = [correct];
-            const shuffled = shuffle([...pool]);
-            for (const item of shuffled) {
-                if (!choices.includes(item)) choices.push(item);
-                if (choices.length === 4) break;
-            }
-            return shuffle(choices);
-        }
-
-        function buildSpellingQuestions(diff) {
-            const words = spellingWords[diff];
-            return words.map((word, index) => {
-                const id = `e_${diff[0]}_${index + 1}`;
-                const mode = index % 3;
-
-                // MUDAH & NORMAL: warna biru/merah dan variasi isi huruf / pilih gambar.
-                if (diff !== 'susah') {
-                    if (mode === 1 && emojiMap[word]) {
-                        return {
-                            id,
-                            prompt: "Pilih gambar yang sepadan dengan ejaan:",
-                            display_html: coloredWord(word),
-                            choices: makePictureChoices(word),
-                            answer: emojiMap[word]
-                        };
-                    }
-
-                    const missingIndex = (index * 7 + word.length) % word.length;
-                    const answer = word[missingIndex].toUpperCase();
-                    const masked = word
-                        .split('')
-                        .map((ch, i) => i === missingIndex ? '_' : ch.toUpperCase())
-                        .join('');
-
-                    const mid = Math.ceil(word.length / 2);
-                    let display = "";
-                    masked.split('').forEach((ch, i) => {
-                        const cls = i < mid ? "suku-biru" : "suku-merah";
-                        display += `<span class="${cls}">${ch}</span>`;
-                    });
-
-                    return {
-                        id,
-                        prompt: "Lengkapkan huruf yang hilang:",
-                        display_html: display,
-                        choices: makeLetterChoices(answer),
-                        answer
-                    };
-                }
-
-                // SUSAH: tiada warna dan menggunakan perkataan yang lebih mencabar.
-                const correct = word.charAt(0).toUpperCase() + word.slice(1);
-                const wrongs = [
-                    correct.slice(0, -1) + (correct.endsWith('a') ? 'e' : 'a'),
-                    correct.replace(/[aeiou]/i, 'e'),
-                    correct.replace(/k/g, 'c').replace(/K/g, 'C')
-                ];
-                const choices = [correct];
-                wrongs.forEach(w => {
-                    if (w !== correct && !choices.includes(w)) choices.push(w);
-                });
-                const extra = [
-                    correct.slice(0, Math.max(1, correct.length - 2)),
-                    correct + "s",
-                    correct.replace(/a/gi, "o")
-                ];
-                for (const w of extra) {
-                    if (w && !choices.includes(w)) choices.push(w);
-                    if (choices.length === 4) break;
-                }
-
-                return {
-                    id,
-                    prompt: "Pilih ejaan yang betul:",
-                    display_html: `<span>${escapeHtml(correct.toUpperCase())}</span>`,
-                    choices: shuffle(choices.slice(0, 4)),
-                    answer: correct
-                };
-            });
-        }
-
-        // GENERATOR SOALAN MENGIRA (150 soalan bagi setiap tahap)
+        // GENERATOR SOALAN MENGIRA (MATEMATIK)
         function generateMathQuestions(diff) {
             let list = [];
-            const opsNormal = ['+', '-', '*', '/'];
-            const opsHard = ['+', '-', '*', '/'];
-
-            for (let i = 1; i <= 150; i++) {
-                let a, b, op, ans;
-
-                if (diff === 'mudah') {
-                    op = i % 2 === 0 ? '+' : '-';
-                    a = ((i * 3) % 10) + 1;
-                    b = ((i * 7) % 10) + 1;
-                    if (op === '-' && a < b) [a, b] = [b, a];
-                    ans = op === '+' ? a + b : a - b;
-                } else if (diff === 'normal') {
-                    op = opsNormal[(i - 1) % opsNormal.length];
-                    if (op === '+') {
-                        a = ((i * 3) % 10) + 1;
-                        b = ((i * 5) % 10) + 1;
-                        ans = a + b;
-                    } else if (op === '-') {
-                        a = ((i * 7) % 10) + 1;
-                        b = ((i * 4) % 10) + 1;
-                        if (a < b) [a, b] = [b, a];
-                        ans = a - b;
-                    } else if (op === '*') {
-                        a = ((i * 2) % 10) + 1;
-                        b = ((i * 3) % 10) + 1;
-                        ans = a * b;
-                    } else {
-                        b = ((i * 3) % 10) + 1;
-                        ans = ((i * 5) % 10) + 1;
-                        a = ans * b;
-                    }
-                } else {
-                    op = opsHard[(i - 1) % opsHard.length];
-                    if (op === '+') {
-                        a = ((i * 17) % 100) + 1;
-                        b = ((i * 29) % 100) + 1;
-                        ans = a + b;
-                    } else if (op === '-') {
-                        a = ((i * 37) % 100) + 1;
-                        b = ((i * 19) % 100) + 1;
-                        if (a < b) [a, b] = [b, a];
-                        ans = a - b;
-                    } else if (op === '*') {
-                        a = ((i * 11) % 100) + 1;
-                        b = ((i * 7) % 100) + 1;
-                        ans = a * b;
-                    } else {
-                        b = ((i * 13) % 100) + 1;
-                        ans = ((i * 17) % 100) + 1;
-                        a = ans * b;
-                    }
+            if (diff === 'mudah') {
+                // + dan - (1 hingga 10)
+                for (let i = 1; i <= 10; i++) {
+                    let a = Math.floor(Math.random() * 9) + 1;
+                    let b = Math.floor(Math.random() * 9) + 1;
+                    let isAdd = Math.random() > 0.5;
+                    if (!isAdd && a < b) { let tmp = a; a = b; b = tmp; } // Elak negatif
+                    let ans = isAdd ? (a + b) : (a - b);
+                    let op = isAdd ? "+" : "-";
+                    let wrong1 = ans + 1, wrong2 = Math.max(0, ans - 1), wrong3 = ans + 2;
+                    list.push({
+                        id: `m_m_${i}_${a}${op}${b}`,
+                        prompt: "Selesaikan operasi tambah/tolak mudah:",
+                        clue: "🔢",
+                        display_html: `${a} ${op} ${b} = ?`,
+                        choices: shuffle([ans.toString(), wrong1.toString(), wrong2.toString(), wrong3.toString()]),
+                        answer: ans.toString()
+                    });
                 }
+            } else if (diff === 'normal') {
+                // +, -, *, / (1 hingga 10)
+                const ops = ['+', '-', '*', '/'];
+                for (let i = 1; i <= 10; i++) {
+                    let op = ops[Math.floor(Math.random() * ops.length)];
+                    let a = Math.floor(Math.random() * 9) + 1;
+                    let b = Math.floor(Math.random() * 9) + 1;
+                    let ans = 0;
+                    if (op === '+') ans = a + b;
+                    else if (op === '-') { if (a < b) { let tmp = a; a = b; b = tmp; } ans = a - b; }
+                    else if (op === '*') ans = a * b;
+                    else if (op === '/') { ans = a; a = a * b; } // Supaya hasil bahagi bulat
 
-                const wrongs = [
-                    ans + (diff === 'mudah' ? 1 : diff === 'normal' ? 2 : 5),
-                    Math.max(0, ans - (diff === 'mudah' ? 1 : 2)),
-                    ans + (diff === 'mudah' ? 2 : diff === 'normal' ? 3 : 10)
-                ];
+                    let wrong1 = ans + 2, wrong2 = Math.max(0, ans - 1), wrong3 = ans + 3;
+                    list.push({
+                        id: `m_n_${i}_${a}${op}${b}`,
+                        prompt: "Selesaikan matematik berikut:",
+                        clue: "🧮",
+                        display_html: `${a} ${op === '*' ? '×' : (op === '/' ? '÷' : op)} ${b} = ?`,
+                        choices: shuffle([ans.toString(), wrong1.toString(), wrong2.toString(), wrong3.toString()]),
+                        answer: ans.toString()
+                    });
+                }
+            } else if (diff === 'susah') {
+                // +, -, *, / (1 hingga 100)
+                const ops = ['+', '-', '*', '/'];
+                for (let i = 1; i <= 10; i++) {
+                    let op = ops[Math.floor(Math.random() * ops.length)];
+                    let a = Math.floor(Math.random() * 80) + 10;
+                    let b = Math.floor(Math.random() * 80) + 10;
+                    let ans = 0;
+                    if (op === '+') ans = a + b;
+                    else if (op === '-') { if (a < b) { let tmp = a; a = b; b = tmp; } ans = a - b; }
+                    else if (op === '*') { a = Math.floor(Math.random() * 12) + 2; b = Math.floor(Math.random() * 12) + 2; ans = a * b; }
+                    else if (op === '/') { b = Math.floor(Math.random() * 9) + 2; ans = Math.floor(Math.random() * 10) + 2; a = ans * b; }
 
-                list.push({
-                    id: `m_${diff[0]}_${i}_${a}${op}${b}`,
-                    prompt: diff === 'mudah'
-                        ? "Selesaikan operasi tambah atau tolak:"
-                        : diff === 'normal'
-                            ? "Selesaikan operasi matematik:"
-                            : "Selesaikan soalan matematik cabaran:",
-                    display_html: `${a} ${op === '*' ? '×' : (op === '/' ? '÷' : op)} ${b} = ?`,
-                    choices: shuffle([ans.toString(), ...wrongs.map(x => x.toString())]),
-                    answer: ans.toString()
-                });
+                    let wrong1 = ans + 5, wrong2 = Math.max(0, ans - 3), wrong3 = ans + 10;
+                    list.push({
+                        id: `m_s_${i}_${a}${op}${b}`,
+                        prompt: "Selesaikan soalan matematik cabaran susah:",
+                        clue: "⚡",
+                        display_html: `${a} ${op === '*' ? '×' : (op === '/' ? '÷' : op)} ${b} = ?`,
+                        choices: shuffle([ans.toString(), wrong1.toString(), wrong2.toString(), wrong3.toString()]),
+                        answer: ans.toString()
+                    });
+                }
             }
             return list;
         }
@@ -522,9 +359,12 @@
             const q = activeQuestions[currentIdx];
             document.getElementById('instruction').innerText = q.prompt;
 
-            // Tiada clue/gambar dipaparkan di dalam soalan.
-            // Jika ada emoji, ia hanya muncul sebagai pilihan jawapan.
-            document.getElementById('question').innerHTML = `<div>${q.display_html}</div>`;
+            let qContent = "";
+            if (q.clue) {
+                qContent += `<div class="clue-img">${q.clue}</div>`;
+            }
+            qContent += `<div>${q.display_html}</div>`;
+            document.getElementById('question').innerHTML = qContent;
 
             const optionsDiv = document.getElementById('options');
             optionsDiv.innerHTML = '';
@@ -583,51 +423,6 @@
                     }
                 })
                 .catch(err => console.error("Ralat simpan skor:", err));
-        }
-
-
-        function redeemReward(rewardId, cost) {
-            const feedback = document.getElementById('reward-feedback');
-            const currentCoins = parseInt(document.getElementById('user-coins').innerText || '0', 10);
-
-            if (currentCoins < cost) {
-                feedback.style.color = "#C62828";
-                feedback.innerText = `Coin tidak mencukupi. Perlu ${cost} 🪙.`;
-                return;
-            }
-
-            feedback.style.color = "#555";
-            feedback.innerText = "Memproses penebusan...";
-
-            fetch('/redeem-reward', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    reward_id: rewardId,
-                    cost: cost
-                })
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        if (data.new_coins !== undefined) {
-                            document.getElementById('user-coins').innerText = data.new_coins;
-                        }
-                        if (data.new_xp !== undefined) {
-                            document.getElementById('user-xp').innerText = data.new_xp;
-                        }
-                        feedback.style.color = "#2E7D32";
-                        feedback.innerText = data.message || "Reward berjaya ditebus! 🎉";
-                    } else {
-                        feedback.style.color = "#C62828";
-                        feedback.innerText = data.message || "Penebusan gagal.";
-                    }
-                })
-                .catch(err => {
-                    console.error("Ralat tebus reward:", err);
-                    feedback.style.color = "#C62828";
-                    feedback.innerText = "Reward belum disambungkan ke backend.";
-                });
         }
 
         // Mula secara automatik bila muat turun halaman
