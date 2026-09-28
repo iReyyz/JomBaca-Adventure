@@ -16,7 +16,7 @@
         .quest-item {
             background: #F1F8E9;
             border: 2px solid #AED581;
-            padding: 12px 18px;
+            padding: 14px 18px;
             border-radius: 12px;
             margin-bottom: 12px;
             display: flex;
@@ -43,6 +43,15 @@
         }
         .btn-claim:hover {
             background: #F57C00;
+        }
+        .btn-play-link {
+            color: var(--secondary);
+            font-weight: bold;
+            text-decoration: none;
+            background: #E8F5E9;
+            padding: 6px 12px;
+            border-radius: 12px;
+            border: 1px solid #C8E6C9;
         }
         .action-grid {
             display: grid;
@@ -89,20 +98,51 @@
             <p><strong>Syiling (Coins):</strong> 🪙 <span id="dash-coins">{{ user.coins }}</span> Syiling</p>
         </div>
 
-        <!-- Daily Quests (Tugasan Harian Budak) -->
+        <!-- Daily Quests (3 Tugasan Harian) -->
         <div class="dashboard-card">
-            <h3 style="margin-top: 0; color: var(--primary);">📅 Tugasan Harian (Daily Quest)</h3>
+            <h3 style="margin-top: 0; color: var(--primary);">📅 Tugasan Harian (Daily Quests)</h3>
             
+            <!-- Quest 1 -->
             <div class="quest-item">
                 <div>
-                    <strong>Tugasan Hari Ini: Main & Belajar ☀️</strong>
-                    <div style="font-size: 0.9rem; color: #666;">Ganjaran Harian: +30 XP & 🪙 15 Syiling</div>
+                    <strong>1. Log masuk hari ini ☀️</strong>
+                    <div style="font-size: 0.9rem; color: #666;">Ganjaran: +10 XP & 🪙 5 Syiling</div>
                 </div>
-                <div id="daily-action-container">
+                <div id="q1-container">
                     {% if daily_completed %}
                         <span class="badge-done">✅ Selesai</span>
                     {% else %}
-                        <button onclick="claimDailyReward()" class="btn-claim">Tuntut Ganjaran 🎁</button>
+                        <button onclick="claimQuest(1)" class="btn-claim">Tuntut Ganjaran 🎁</button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quest 2 -->
+            <div class="quest-item">
+                <div>
+                    <strong>2. Main 1 pusingan Mini Game 🎯</strong>
+                    <div style="font-size: 0.9rem; color: #666;">Ganjaran: +20 XP & 🪙 10 Syiling</div>
+                </div>
+                <div id="q2-container">
+                    {% if daily_completed %}
+                        <span class="badge-done">✅ Selesai</span>
+                    {% else %}
+                        <a href="{{ url_for('game.play_game') }}" class="btn-play-link">Main Sekarang ➡️</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quest 3 -->
+            <div class="quest-item">
+                <div>
+                    <strong>3. Capai skor dalam mana-mana Tahap 🏆</strong>
+                    <div style="font-size: 0.9rem; color: #666;">Ganjaran: +30 XP & 🪙 15 Syiling</div>
+                </div>
+                <div id="q3-container">
+                    {% if daily_completed %}
+                        <span class="badge-done">✅ Selesai</span>
+                    {% else %}
+                        <button onclick="claimQuest(3)" class="btn-claim">Tuntut Ganjaran 🎁</button>
                     {% endif %}
                 </div>
             </div>
@@ -120,20 +160,23 @@
     </div>
 
     <script>
-        function claimDailyReward() {
+        function claimQuest(questNum) {
             fetch('/claim-daily', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             })
             .then(res => res.json())
             .then(data => {
-                if (data.status === 'success') {
-                    alert(data.message);
-                    document.getElementById('dash-xp').innerText = data.new_xp;
-                    document.getElementById('dash-coins').innerText = data.new_coins;
-                    document.getElementById('daily-action-container').innerHTML = '<span class="badge-done">✅ Selesai</span>';
-                } else {
-                    alert(data.message);
+                if (data.status === 'success' || data.status === 'already_claimed') {
+                    if (data.status === 'success') {
+                        alert(data.message);
+                        document.getElementById('dash-xp').innerText = data.new_xp;
+                        document.getElementById('dash-coins').innerText = data.new_coins;
+                    }
+                    // Tandakan kesemua daily quests sebagai Selesai untuk hari ini
+                    document.getElementById('q1-container').innerHTML = '<span class="badge-done">✅ Selesai</span>';
+                    document.getElementById('q2-container').innerHTML = '<span class="badge-done">✅ Selesai</span>';
+                    document.getElementById('q3-container').innerHTML = '<span class="badge-done">✅ Selesai</span>';
                 }
             })
             .catch(err => console.error("Ralat tuntut harian:", err));
