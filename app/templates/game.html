@@ -221,24 +221,44 @@
             for (let i = 0; i < 150; i++) {
                 let item = rawMudah[i % rawMudah.length];
                 let isFillBlank = (i % 2 === 0);
+                let word = item[0]; // e.g. "BATU"
+                let part1 = item[1]; // e.g. "BA"
+                let part2 = item[2]; // e.g. "TU"
+                let emoji = item[3];
+
                 if (isFillBlank) {
-                    let missingChar = item[0][item[0].length - 2] || 'A';
+                    // Cari vokal/konsonan akhir dari part2 yang akan dihilangkan
+                    let missingChar = part2.charAt(part2.length - 1); // e.g. 'U' dalam "TU"
+                    let part2Display = part2.slice(0, -1) + '_'; // "T_"
+
+                    // Bina pilihan jawapan mengandungi missingChar + 3 huruf pilihan lain yang tidak sama
+                    let allVowels = ['A', 'E', 'I', 'O', 'U', 'B', 'T', 'K', 'S', 'L', 'R', 'M'];
+                    let wrongChoices = allVowels.filter(c => c !== missingChar);
+                    wrongChoices = shuffle(wrongChoices).slice(0, 3);
+                    let finalChoices = shuffle([missingChar, ...wrongChoices]);
+
                     mudahList.push({
                         id: `e_m_${i}`,
-                        prompt: "Lengkapkan huruf tempat kosong:",
+                        prompt: "Isi tempat kosong dengan huruf yang betul:",
                         clue: "",
-                        display_html: `<span class='suku-biru'>${item[1]}</span><span class='suku-merah'>${item[2].replace(/[AEIOUaeiou]/, '_')}</span>`,
-                        choices: shuffle([missingChar, 'E', 'I', 'O']),
+                        display_html: `<span class='suku-biru'>${part1}</span><span class='suku-merah'>${part2Display}</span>`,
+                        choices: finalChoices,
                         answer: missingChar
                     });
                 } else {
+                    // Pilihan jawapan berbentuk Gambar / Emoji
+                    let allEmojis = ['🐍', '⚽', '🪨', '📖', '🍚', '🐎', '🦌', '🦆', '🐟', '🍎', '🍞', '🥄', '🧹', '🖊️', '🪑', '🧢', '🏃', '🪢', '🍬', '🥛'];
+                    let wrongEmojis = allEmojis.filter(e => e !== emoji);
+                    wrongEmojis = shuffle(wrongEmojis).slice(0, 3);
+                    let finalChoices = shuffle([emoji, ...wrongEmojis]);
+
                     mudahList.push({
                         id: `e_m_${i}`,
                         prompt: "Pilih gambar yang sepadan bagi ejaan berikut:",
                         clue: "",
-                        display_html: `<span class='suku-biru'>${item[1]}</span><span class='suku-merah'>${item[2]}</span>`,
-                        choices: shuffle([item[3], '🐱', '🐶', '🚗']),
-                        answer: item[3]
+                        display_html: `<span class='suku-biru'>${part1}</span><span class='suku-merah'>${part2}</span>`,
+                        choices: finalChoices,
+                        answer: emoji
                     });
                 }
             }
@@ -247,24 +267,41 @@
             for (let i = 0; i < 150; i++) {
                 let item = rawNormal[i % rawNormal.length];
                 let isFillBlank = (i % 2 === 0);
+                let word = item[0];
+                let part1 = item[1];
+                let part2 = item[2];
+                let emoji = item[3];
+
                 if (isFillBlank) {
-                    let missingChar = item[0][item[0].length - 2] || 'A';
+                    let missingChar = part2.charAt(part2.length - 1);
+                    let part2Display = part2.slice(0, -1) + '_';
+
+                    let allChars = ['A', 'E', 'I', 'O', 'U', 'G', 'H', 'N', 'S', 'T', 'K', 'R'];
+                    let wrongChoices = allChars.filter(c => c !== missingChar);
+                    wrongChoices = shuffle(wrongChoices).slice(0, 3);
+                    let finalChoices = shuffle([missingChar, ...wrongChoices]);
+
                     normalList.push({
                         id: `e_n_${i}`,
-                        prompt: "Lengkapkan ejaan berikut:",
+                        prompt: "Isi tempat kosong dengan huruf yang betul:",
                         clue: "",
-                        display_html: `<span class='suku-biru'>${item[1]}</span><span class='suku-merah'>${item[2].replace(/[AEIOUaeiou]/, '_')}</span>`,
-                        choices: shuffle([missingChar, 'U', 'I', 'O']),
+                        display_html: `<span class='suku-biru'>${part1}</span><span class='suku-merah'>${part2Display}</span>`,
+                        choices: finalChoices,
                         answer: missingChar
                     });
                 } else {
+                    let allEmojis = ['🐱', '🏫', '🐦', '🔴', '🍌', '🚗', '📄', '🎓', '🧱', '🏠', '🌳', '🏞️', '🌷', '🏪', '🚪', '📏'];
+                    let wrongEmojis = allEmojis.filter(e => e !== emoji);
+                    wrongEmojis = shuffle(wrongEmojis).slice(0, 3);
+                    let finalChoices = shuffle([emoji, ...wrongEmojis]);
+
                     normalList.push({
                         id: `e_n_${i}`,
                         prompt: "Pilih gambar yang sepadan bagi perkataan:",
                         clue: "",
-                        display_html: `<span class='suku-biru'>${item[1]}</span><span class='suku-merah'>${item[2]}</span>`,
-                        choices: shuffle([item[3], '🏫', '🏠', '⭐']),
-                        answer: item[3]
+                        display_html: `<span class='suku-biru'>${part1}</span><span class='suku-merah'>${part2}</span>`,
+                        choices: finalChoices,
+                        answer: emoji
                     });
                 }
             }
